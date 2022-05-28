@@ -8,6 +8,17 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(rjson)
+
+# Load data
+cards <- read.csv('data/cards/cards.csv')
+decks <- fromJSON(file='data/decks/decks.json')
+
+# Function to obtain card metadata from its ID code
+getCard <- function(id) {
+  return(cards[cards$id == id,])
+}
+
 ```
 
 Column {data-width=650}
