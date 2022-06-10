@@ -48,6 +48,10 @@ shinyUI(fluidPage(
                  # TODO
                  h2('Popular Cards'),
                  p('<brief description of the plot and how to use it>'),
+                 radioButtons('CTL_PopularCards_RadioButtons',
+                              'Card Type',
+                              choices=c('Monster', 'Magic', 'Trap'),
+                              inline=TRUE),
                  plotOutput('PLT_PopularCards')
                  ),
         tabPanel('ATK/DEF Stats', value='NAV_AtkDefStats', icon=icon('shield-alt'),

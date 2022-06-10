@@ -23,11 +23,24 @@ getCard <- function(id) {
 shinyServer(function(input, output) {
 
     output$PLT_PopularCards <- renderPlot({
-      # TODO
+      # Fetch user input
+      type <- input$CTL_PopularCards_RadioButtons
+      
+      # Build a single list of all cards across all decks
+      data <- c()
+      for (deck in decks) {
+        for (card in deck$deck$main) {
+          data <- data(getCard(card))
+        }
+      }
     })
     
     output$PLT_AtkDefStats <- renderPlot({
       # TODO
+      insertUI(selector='#TITLE',
+               where='afterEnd',
+               ui=HTML('<p>example follow-up paragraph</p>'),
+               immediate=T)
     })
     
     output$PLT_DeckBreakdown <- renderPlot({
