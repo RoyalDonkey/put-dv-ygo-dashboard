@@ -29,6 +29,12 @@ shinyUI(fluidPage(
           margin-right: 20px;
           height: 100vh;
       }
+      
+      /* Layout and appearance of UI controls */
+      .control_rack > div {
+          display: inline-block;
+          margin: 10px;
+      }
       '))
     ),
   
@@ -47,11 +53,19 @@ shinyUI(fluidPage(
         tabPanel('Popular Cards', value='NAV_PopularCards', icon=icon('star'),
                  # TODO
                  h2('Popular Cards'),
-                 p('<brief description of the plot and how to use it>'),
-                 radioButtons('CTL_PopularCards_RadioButtons',
-                              'Card Type',
-                              choices=c('Monster', 'Magic', 'Trap'),
-                              inline=TRUE),
+                 p('This page grants insight into the cards used the most by
+                   Yu-Gi-Oh! players all around the world. You can filter by
+                   card type and further explore the top 100 with the slider.'),
+                 div(class='control_rack',
+                  radioButtons('CTL_PopularCards_TypeRadio',
+                                'Card Type',
+                                choiceNames=c('Monster', 'Spell', 'Trap'),
+                                choiceValues=c('monster', 'spell', 'trap'),
+                                inline=TRUE),
+                  sliderInput('CTL_PopularCards_CountSlider',
+                              'Top Count',
+                              min=1, max=100, value=c(1, 10), step=1),
+                 ),
                  plotOutput('PLT_PopularCards')
                  ),
         tabPanel('ATK/DEF Stats', value='NAV_AtkDefStats', icon=icon('shield-alt'),
