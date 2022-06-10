@@ -16,6 +16,10 @@
 	- filter by attribute
 3. Monster/Spell/Trap stacked bar plot according to submission date
 	- see exact numbers on mouse hover
+4. Card explorer
+	- search by name
+	- filter by type, ATK/DEF and more
+	- display card image and stats (static page, no ggplot)
 
 ### For the memes
 
