@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(DT)
 
 # Constants
 IMG_TITLE_SRC <- 'https://cdn3.iconfinder.com/data/icons/7-millennium-items/512/Milennium_Puzzle_Icon_Colored-512.png'
