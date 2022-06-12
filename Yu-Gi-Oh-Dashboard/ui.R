@@ -80,6 +80,13 @@ shinyUI(fluidPage(
                  p('<brief description of the plot and how to use it>'),
                  plotOutput('PLT_DeckBreakdown')
                  ),
+        tabPanel('Card Explorer', value='NAV_CardExplorer', icon=icon('search'),
+                 # TODO
+                 h2('Card Explorer'),
+                 p('Search for specific cards by name, atc/def or other attributes. 
+                    Click on a card name to see its picture.'),
+                 dataTableOutput("DATA_CardExplorer")
+                 ),
         tabPanel('Meme Counters', value='NAV_MemeCounters', icon=icon('ankh'),
                  # TODO
                  h2('Meme Counters')
