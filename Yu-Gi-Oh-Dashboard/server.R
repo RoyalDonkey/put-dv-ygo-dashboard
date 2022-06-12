@@ -13,6 +13,7 @@ library(rjson)
 library(ggplot2)
 library(plotly)
 library(data.table)
+library(DT)
 
 # Load data
 cards <- read.csv('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cards/cards.csv')
@@ -105,6 +106,26 @@ shinyServer(function(input, output) {
     
     output$PLT_DeckBreakdown <- renderPlot({
       # TODO
+    })
+  
+    output$DATA_CardExplorer <- renderDataTable({
+      #Make from card names links to pictures
+      for (i in 1:length(cards)) {
+        cards$name[i] = paste('<a href=',paste('"',cards$image_url[i],'"'),'>',cards$name[i],'</a>')
+      }
+      #Create datatable with edited parameters
+      datatable(cards, 
+                options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 20), pageLength = 5,
+                               columnDefs = list(list(visible=FALSE, 
+                                                      targets=c('linkval','linkmarkers', 'image_url',
+                                                                'image_url_small','ban_tcg','ban_ocg',
+                                                                'ban_goat')))
+                               ),
+                rownames = FALSE, colnames = c('ID','Name','Type','Description',
+                                               'Attack','Defense','Level','Race',
+                                               'Attribute','Scale','Archetype'),
+                escape = FALSE
+                )
     })
     
     # TODO (Meme Counters)
