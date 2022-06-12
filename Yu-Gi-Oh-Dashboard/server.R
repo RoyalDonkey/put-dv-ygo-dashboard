@@ -110,7 +110,7 @@ shinyServer(function(input, output) {
   
     output$DATA_CardExplorer <- renderDataTable({
       #Make from card names links to pictures
-      for (i in 1:length(cards)) {
+      for (i in 1:length(cards$name)) {
         cards$name[i] = paste('<a href=',paste('"',cards$image_url[i],'"'),'>',cards$name[i],'</a>')
       }
       #Create datatable with edited parameters
