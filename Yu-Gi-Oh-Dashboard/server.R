@@ -16,6 +16,7 @@ library(data.table)
 library(DT)
 library(tidyr)
 library(scales)
+library(flexdashboard)
 
 # Load data
 cards <- read.csv('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cards/cards.csv')
@@ -42,6 +43,7 @@ for (deck in decks) {
 }
 rm(deck)
 decks_cards <- as.data.frame(do.call(rbind, decks_cards))
+DECKS_CARDS_NUM <- nrow(decks_cards) # Save this number, because it's handy
 decks_cards <- setDT(decks_cards)[, .N, decks_cards]
 
 # Unified theme for all plots
@@ -214,5 +216,115 @@ shinyServer(function(input, output) {
                 )
     })
     
-    # TODO (Meme Counters)
+    # Returns the number a given card appears in all decks
+    decks_count <- function(card_id) {
+      return(decks_cards[decks_cards$id == card_id,]$N)
+    }
+    
+    # Function for rendering gauge type 1: the number of card(s) out of all of them
+    gauge1 <- function(num) {
+      maxNum <- length(decks)
+      return(gauge(num, min=0, max=maxNum, label='CARDS'))
+    }
+    
+    # Function for rendering gauge type 2: the number of decks contain at least
+    # 1 copy of at least 1 of the given cards.
+    gauge2 <- function(card_ids) {
+      num <- 0
+      for (deck in decks) {
+        found <- FALSE
+        for (search_id in card_ids) {
+          for (card_id in deck$deck$main) {
+            if (card_id == search_id) {
+              found <- TRUE
+              num <- num + 1
+              break
+            }
+          }
+          if (found) { break }
+        }
+      }
+      maxNum <- length(decks)
+      return(gauge(num, min=0, max=maxNum, label='DECKS'))
+    }
+    
+    # Function for rendering gauge type 3: the total number of copies of all
+    # given cards across all decks.
+    gauge3 <- function(card_ids) {
+      num <- 0
+      for (search_id in card_ids) {
+        num <- num + decks_count(search_id)
+      }
+      maxNum <- DECKS_CARDS_NUM
+      return(gauge(num, min=0, max=maxNum, label='COPIES'))
+    }
+    
+    # Memes: Pot of Greed
+    potofgreed_id <- id <- cards[cards$name == 'Pot of Greed',]$id
+    output$PLT_Meme_PotOfGreed1 <- renderGauge({ gauge1(1) })
+    output$PLT_Meme_PotOfGreed2 <- renderGauge({ gauge2(c(potofgreed_id)) })
+    output$PLT_Meme_PotOfGreed3 <- renderGauge({ gauge3(c(potofgreed_id)) })
+    
+    # Memes: Blue-Eyes White Dragon
+    blueeyeswhitedragon_id <- cards[cards$name == 'Blue-Eyes White Dragon',]$id
+    output$PLT_Meme_BlueEyesWhiteDragon1 <- renderGauge({ gauge1(1) })
+    output$PLT_Meme_BlueEyesWhiteDragon2 <- renderGauge({ gauge2(c(blueeyeswhitedragon_id)) })
+    output$PLT_Meme_BlueEyesWhiteDragon3 <- renderGauge({ gauge3(c(blueeyeswhitedragon_id)) })
+    
+    # Memes: Blue-Eyes in name/description cards
+    blueeyes <- dplyr::filter(cards, grepl('Blue-Eyes', name) |
+                              grepl('Blue-Eyes', desc))
+    blueeyes_ids <- c()
+    for (i in 1:nrow(blueeyes)) {
+      blueeyes_ids[length(blueeyes_ids) + 1] <- blueeyes[i,]$id
+    }
+    output$PLT_Meme_BlueEyes1 <- renderGauge({ gauge1(nrow(blueeyes)) })
+    output$PLT_Meme_BlueEyes2 <- renderGauge({ gauge2(blueeyes_ids) })
+    output$PLT_Meme_BlueEyes3 <- renderGauge({ gauge3(blueeyes_ids) })
+    
+    # Memes: Exodia the Forbidden One
+    exodia_ids <- c(cards[cards$name == 'Exodia the Forbidden One',]$id,
+                    cards[cards$name == 'Left Arm of the Forbidden One',]$id,
+                    cards[cards$name == 'Right Arm of the Forbidden One',]$id,
+                    cards[cards$name == 'Left Leg of the Forbidden One',]$id,
+                    cards[cards$name == 'Right Leg of the Forbidden One',]$id)
+    output$PLT_Meme_Exodia1 <- renderGauge({ gauge1(length(exodia_ids)) })
+    output$PLT_Meme_Exodia2 <- renderGauge({ gauge2(exodia_ids) })
+    output$PLT_Meme_Exodia3 <- renderGauge({ gauge3(exodia_ids) })
+    
+    # Memes: Exodia or Forbidden One in name/description
+    moreexodia <- dplyr::filter(cards, grepl('(Exodia|Forbidden One)', name) |
+                                       grepl('(Exodia|Forbidden One)', desc))
+    moreexodia_ids <- c()
+    for (i in 1:nrow(moreexodia)) {
+      moreexodia_ids[length(moreexodia_ids) + 1] <- moreexodia[i,]$id
+    }
+    output$PLT_Meme_MoreExodia1 <- renderGauge({ gauge1(nrow(moreexodia)) })
+    output$PLT_Meme_MoreExodia2 <- renderGauge({ gauge2(moreexodia_ids) })
+    output$PLT_Meme_MoreExodia3 <- renderGauge({ gauge3(moreexodia_ids) })
+    
+    # Memes: Dark Magician
+    darkmagician_id <- cards[cards$name == 'Dark Magician',]$id
+    output$PLT_Meme_DarkMagician1 <- renderGauge({ gauge1(1) })
+    output$PLT_Meme_DarkMagician2 <- renderGauge({ gauge2(c(darkmagician_id)) })
+    output$PLT_Meme_DarkMagician3 <- renderGauge({ gauge3(c(darkmagician_id)) })
+    
+    # Memes: Blue-Eyes in name/description cards
+    moredarkmagician <- dplyr::filter(cards, grepl('Dark Magician', name) |
+                                             grepl('Dark Magician', desc))
+    moredarkmagician_ids <- c()
+    for (i in 1:nrow(moredarkmagician)) {
+      moredarkmagician_ids[length(moredarkmagician_ids) + 1] <- moredarkmagician[i,]$id
+    }
+    output$PLT_Meme_MoreDarkMagician1 <- renderGauge({ gauge1(nrow(moredarkmagician)) })
+    output$PLT_Meme_MoreDarkMagician2 <- renderGauge({ gauge2(moredarkmagician_ids) })
+    output$PLT_Meme_MoreDarkMagician3 <- renderGauge({ gauge3(moredarkmagician_ids) })
+    
+    # Memes: God cards
+    god_ids <- c(cards[cards$name == 'Slifer the Sky Dragon',]$id,
+                 cards[cards$name == 'The Winged Dragon of Ra',]$id,
+                 cards[cards$name == 'Obelisk the Tormentor',]$id)
+    output$PLT_Meme_GodCards1 <- renderGauge({ gauge1(length(god_ids)) })
+    output$PLT_Meme_GodCards2 <- renderGauge({ gauge2(god_ids) })
+    output$PLT_Meme_GodCards3 <- renderGauge({ gauge3(god_ids) })
 })
