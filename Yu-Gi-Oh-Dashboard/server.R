@@ -14,6 +14,8 @@ library(ggplot2)
 library(plotly)
 library(data.table)
 library(DT)
+library(tidyr)
+library(scales)
 
 # Load data
 cards <- read.csv('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cards/cards.csv')
@@ -51,6 +53,39 @@ custom_theme <- theme(legend.title=element_text(size=15),
                       axis.text.y=element_text(size=14),
                       plot.title=element_text(size=16, hjust=0.5, vjust=0.5),
                       plot.subtitle=element_text(size=15, hjust=0.5, vjust=0.5))
+
+# Split violin plot function
+# source: https://stackoverflow.com/a/45614547/10792539
+GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin, 
+                           draw_group = function(self, data, ..., draw_quantiles = NULL) {
+                             data <- transform(data, xminv = x - violinwidth * (x - xmin), xmaxv = x + violinwidth * (xmax - x))
+                             grp <- data[1, "group"]
+                             newdata <- plyr::arrange(transform(data, x = if (grp %% 2 == 1) xminv else xmaxv), if (grp %% 2 == 1) y else -y)
+                             newdata <- rbind(newdata[1, ], newdata, newdata[nrow(newdata), ], newdata[1, ])
+                             newdata[c(1, nrow(newdata) - 1, nrow(newdata)), "x"] <- round(newdata[1, "x"])
+                             
+                             if (length(draw_quantiles) > 0 & !scales::zero_range(range(data$y))) {
+                               stopifnot(all(draw_quantiles >= 0), all(draw_quantiles <=
+                                                                         1))
+                               quantiles <- ggplot2:::create_quantile_segment_frame(data, draw_quantiles)
+                               aesthetics <- data[rep(1, nrow(quantiles)), setdiff(names(data), c("x", "y")), drop = FALSE]
+                               aesthetics$alpha <- rep(1, nrow(quantiles))
+                               both <- cbind(quantiles, aesthetics)
+                               quantile_grob <- GeomPath$draw_panel(both, ...)
+                               ggplot2:::ggname("geom_split_violin", grid::grobTree(GeomPolygon$draw_panel(newdata, ...), quantile_grob))
+                             }
+                             else {
+                               ggplot2:::ggname("geom_split_violin", GeomPolygon$draw_panel(newdata, ...))
+                             }
+                           })
+
+geom_split_violin <- function(mapping = NULL, data = NULL, stat = "ydensity", position = "identity", ..., 
+                              draw_quantiles = NULL, trim = TRUE, scale = "area", na.rm = FALSE, 
+                              show.legend = NA, inherit.aes = TRUE) {
+  layer(data = data, mapping = mapping, stat = stat, geom = GeomSplitViolin, 
+        position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
+        params = list(trim = trim, scale = scale, draw_quantiles = draw_quantiles, na.rm = na.rm, ...))
+}
 
 # Define server logic
 shinyServer(function(input, output) {
@@ -97,11 +132,59 @@ shinyServer(function(input, output) {
     })
     
     output$PLT_AtkDefStats <- renderPlot({
-      # TODO
-      insertUI(selector='#TITLE',
-               where='afterEnd',
-               ui=HTML('<p>example follow-up paragraph</p>'),
-               immediate=T)
+      type <- input$CTL_AtkDefStats_Type
+      attr <- input$CTL_AtkDefStats_Attr
+      lvl  <- input$CTL_AtkDefStats_Lvl
+      format  <- input$CTL_AtkDefStats_Format
+      status  <- input$CTL_AtkDefStats_Status
+      
+      data  <- dplyr::filter(cards, grepl('Monster', type))
+      if (length(type) == 0 || length(attr) == 0 ||
+          length(lvl)  == 0 || length(status) == 0) {
+        data <- data[0,]
+      }
+      
+      # Filter type, attribute and level
+      regex <- paste0('(', paste(type, collapse='|'), ')')
+      data  <- dplyr::filter(data, grepl(regex, type))
+      regex <- paste0('^(', paste(attr, collapse='|'), ')$')
+      data  <- dplyr::filter(data, grepl(regex, attribute))
+      regex <- paste0('^(', paste(lvl,  collapse='|'), ')$')
+      data  <- dplyr::filter(data, grepl(regex, level))
+      
+      # Replace empty string with "Unlimited" for convenience
+      for (col in c('ban_tcg', 'ban_ocg', 'ban_goat')) {
+        data[col][data[col] == ""] <- 'Unlimited'
+      }
+      
+      # Filter TCG, OCG and Goat status
+      if (format == 'TCG') {
+        regex <- paste0('^(', paste(status, collapse='|'), ')$')
+        data  <- dplyr::filter(data, grepl(regex, ban_tcg))
+      } else if (format == 'OCG') {
+        regex <- paste0('^(', paste(status, collapse='|'), ')$')
+        data  <- dplyr::filter(data, grepl(regex, ban_ocg))
+      } else if (format == 'Goat') {
+        regex <- paste0('^(', paste(status, collapse='|'), ')$')
+        data  <- dplyr::filter(data, grepl(regex, ban_goat))
+      } else {
+        print('ERROR! Unknown format!')
+      }
+      
+      # Convert wide (ATK, DEF) to long (ATKorDEF, value)
+      data <- rename(data, ATK=atk, DEF=def)
+      data <- gather(data, ATKorDEF, value, ATK:DEF, factor_key=TRUE)
+      
+      # Construct plot
+      ggplot(data) +
+        aes(x=factor(level), y=value, fill=ATKorDEF) +
+        geom_split_violin() +
+        theme_minimal() +
+        labs(title='ATK/DEF distributions', x='Stars') +
+        custom_theme +
+        theme(legend.title=element_blank(),
+              axis.title.y=element_blank()) +
+        scale_y_continuous(breaks=seq(0, 10000, 500))
     })
     
     output$PLT_DeckBreakdown <- renderPlot({

@@ -34,6 +34,7 @@ shinyUI(fluidPage(
       /* Layout and appearance of UI controls */
       .control_rack > div {
           display: inline-block;
+          vertical-align: top;
           margin: 10px;
       }
       '))
@@ -52,7 +53,6 @@ shinyUI(fluidPage(
                  p('Welcome to the Yu-Gi-Oh! Duel Monsters Dashboard!')
                  ),
         tabPanel('Popular Cards', value='NAV_PopularCards', icon=icon('star'),
-                 # TODO
                  h2('Popular Cards'),
                  p('This page grants insight into the cards used the most by
                    Yu-Gi-Oh! players all around the world. You can filter by
@@ -72,7 +72,48 @@ shinyUI(fluidPage(
         tabPanel('ATK/DEF Stats', value='NAV_AtkDefStats', icon=icon('shield-alt'),
                  # TODO
                  h2('ATK/DEF Stats'),
-                 p('<brief description of the plot and how to use it>'),
+                 p('This page allows you to view the distribution of ATK and DEF
+                   values of Monster cards. You can filter by type, attribute,
+                   level and even status according to the 3 popular Duel
+                   Monsters formats (TCG, OCG and Goat).'),
+                 p('All filter categories are conjunctive (e.g. "Normal" and
+                   "DARK" will include Monsters which are both Normal and DARK),
+                   while all options within a filter category are disjunctive
+                   (e.g. "FIRE" and "WATER" will include Monsters which are of
+                   either FIRE or WATER attribute).'),
+                 div(class='control_rack',
+                   checkboxGroupInput('CTL_AtkDefStats_Type',
+                                      'Monster Types',
+                                      c('Normal', 'Effect', 'Fusion', 'Link',
+                                        'Pendulum', 'XYZ', 'Synchro', 'Tuner'),
+                                      selected=c('Normal'),
+                                      inline=TRUE),
+                   checkboxGroupInput('CTL_AtkDefStats_Attr',
+                                      'Attributes',
+                                      c('DARK', 'WIND',  'EARTH',
+                                        'FIRE', 'LIGHT', 'WATER',
+                                        'DIVINE'),
+                                      selected=c('DARK', 'WIND',  'EARTH',
+                                                 'FIRE', 'LIGHT', 'WATER',
+                                                 'DIVINE'),
+                                      inline=TRUE),
+                   checkboxGroupInput('CTL_AtkDefStats_Lvl',
+                                      'Levels (Stars)',
+                                      seq(0, 12),
+                                      selected=seq(2, 8),
+                                      inline=TRUE)
+                 ),
+                 div(class='control_rack',
+                   selectInput('CTL_AtkDefStats_Format',
+                               'Format',
+                               choices=c('TCG', 'OCG', 'Goat'),
+                               selected='TCG'),
+                   checkboxGroupInput('CTL_AtkDefStats_Status',
+                                      'Card Status',
+                                      c('Unlimited', 'Semi-Limited', 'Limited', 'Banned'),
+                                      selected=c('Unlimited', 'Semi-Limited','Limited'),
+                                      inline=TRUE)
+                 ),
                  plotOutput('PLT_AtkDefStats')
                  ),
         tabPanel('Deck Breakdown', value='NAV_DeckBreakdown', icon=icon('chart-pie'),
