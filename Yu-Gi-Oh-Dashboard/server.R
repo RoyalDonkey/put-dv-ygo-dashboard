@@ -192,19 +192,22 @@ shinyServer(function(input, output) {
     })
   
     output$DATA_CardExplorer <- renderDataTable({
-      #Make from card names links to pictures
-      for (i in 1:length(cards$name)) {
-        cards$name[i] = paste('<a href=',paste('"',cards$image_url[i],'"'),'>',cards$name[i],'</a>')
+      # Make from card names links to pictures
+      data <- cards
+      for (i in 1:length(data$name)) {
+        data$id[i]  <- paste0('<a href="', data$image_url[i], '"><img src="',
+                              data$image_url_small[i], '" height="100"/></a>')
       }
-      #Create datatable with edited parameters
-      datatable(cards, 
-                options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 20), pageLength = 5,
+      
+      # Create datatable with edited parameters
+      datatable(data, 
+                options = list(orderClasses = TRUE, lengthMenu = c(5, 10, 20, 50, 100), pageLength = 5,
                                columnDefs = list(list(visible=FALSE, 
                                                       targets=c('linkval','linkmarkers', 'image_url',
                                                                 'image_url_small','ban_tcg','ban_ocg',
                                                                 'ban_goat')))
                                ),
-                rownames = FALSE, colnames = c('ID','Name','Type','Description',
+                rownames = FALSE, colnames = c('Card', 'Name','Type','Description',
                                                'Attack','Defense','Level','Race',
                                                'Attribute','Scale','Archetype'),
                 escape = FALSE
