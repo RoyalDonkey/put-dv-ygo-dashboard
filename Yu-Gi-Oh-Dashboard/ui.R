@@ -131,7 +131,12 @@ shinyUI(fluidPage(
                              'src="https://www.youtube.com/embed/_dq0NCCN5Ms" ',
                              'title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; ',
                              'clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')),
+                 h3('Authors'),
+                 p('This dashboard was made for a university project by Piotr Kaszubski and Andrii Kozar.'),
+                 p('The source code is available at ',
+                   a('https://github.com/RoyalDonkey/put-dv-ygo-dashboard'))
                  ),
+        
         tabPanel('Popular Cards', value='NAV_PopularCards', icon=icon('star'),
                  h2('Popular Cards'),
                  p('This page grants insight into the cards used the most by
