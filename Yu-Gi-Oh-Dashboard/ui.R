@@ -41,11 +41,46 @@ shinyUI(fluidPage(
           vertical-align: bottom;
       }
       
-      /* Override navbar width and height */
+      /* Fix navlist */
       .col-sm-4 {
+          position: fixed;
+          z-index: 1;
           width: auto;
-          margin-right: 20px;
-          height: 100vh;
+          margin-left: 10px;
+      }
+      
+      /* Navlist colors */
+      .nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+          color: #fff;
+          background-color: #973c10;
+      }
+      .col-sm-4 a {
+          color: #5e402e;
+      }
+      
+      /* Main content panel */
+      .col-sm-8 {
+          overflow: hidden;
+          margin-left: 220px;
+          background-color: white;
+          border-radius: 4px;
+      }
+      
+      /* Title bar */
+      .container-fluid > h1 {
+          color: white;
+          background-color: #0005;
+          margin: 5px 5px 5px -5px;
+          padding: 10px 10px 10px 10px;
+          border-radius: 10px;
+      }
+      
+      /* Add background image */
+      body {
+        background-image: url("https://wallpapercave.com/wp/wp4199668.jpg");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
       }
       
       /* Layout and appearance of UI controls */
