@@ -111,6 +111,13 @@ shinyUI(fluidPage(
         tabPanel('Home Page', value='NAV_HomePage', icon=icon('home'),
                  h2('Home Page'),
                  p('Welcome to the Yu-Gi-Oh! Duel Monsters Dashboard!'),
+                 p('The dashboard derives all its data from these datasets:'),
+                 HTML('<ul>
+                      <li><a href="https://www.kaggle.com/datasets/ioexception/yugioh-cards">Yu-Gi-Oh! Cards</a></li>
+                      <li><a href="https://www.kaggle.com/datasets/ioexception/yugioh-decks">Yu-Gi-Oh! Decks</a></li>
+                      </ul>'),
+                 p('These datasets comprise of data fetched using the',
+                   a('ygoprodeck.com', href='https://ygoprodeck.com/'), 'API.'),
                  h3('Soundtrack'),
                  p('There are many things Yu-Gi-Oh! is known for, and it definitely
                    does not disappoint in terms of its soundtrack. Both the Japanese
