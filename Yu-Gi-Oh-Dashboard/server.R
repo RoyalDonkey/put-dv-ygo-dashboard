@@ -218,7 +218,8 @@ shinyServer(function(input, output) {
     
     # Returns the number a given card appears in all decks
     decks_count <- function(card_id) {
-      return(decks_cards[decks_cards$id == card_id,]$N)
+      count <- decks_cards[decks_cards$id == card_id,]$N
+      return(if (length(count) == 0) { 0 } else { count })
     }
     
     # Function for rendering gauge type 1: the number of card(s) out of all of them
