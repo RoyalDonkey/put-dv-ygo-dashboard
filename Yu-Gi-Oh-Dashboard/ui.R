@@ -35,6 +35,8 @@ shinyUI(fluidPage(
 
     # Inline custom CSS
     tags$head(
+      tags$title('Yu-Gi-Oh! Duel Monsters Dashboard'),
+      tags$head(tags$link(rel="shortcut icon", href=IMG_TITLE_SRC)),
       tags$style(HTML('
       /* Tweak alignment of the title text relative to title image */
       #TITLE {
