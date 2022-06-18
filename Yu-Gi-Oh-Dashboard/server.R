@@ -20,14 +20,20 @@ library(flexdashboard)
 
 # Load data
 cards <- read.csv('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cards/cards.csv')
-decks <- fromJSON(paste(readLines('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/decks/decks.json', warn=F), collapse=''))
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/cards_cache.Rdata'))
+load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/decks_contain.Rdata'))
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/decks_cards.Rdata'))
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/DECKS_CARDS_COUNT.Rdata'))
+load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/DECKS_COUNT.Rdata'))
 
 # Function to obtain card metadata from its ID code in O(1) time
 getCard <- function(id) {
   return(cards_cache[[paste0('c', id)]])
+}
+
+# Function to obtain the number of decks a card appears in in O(1) time
+getCardDecks <- function(id) {
+  return(decks_contain[[paste0('c', id)]])
 }
 
 # Unified theme for all plots
@@ -81,7 +87,7 @@ decks_count <- function(card_id) {
 
 # Function for rendering gauge type 1: the number of card(s) out of all of them
 gauge1 <- function(num) {
-  maxNum <- length(decks)
+  maxNum <- DECKS_COUNT
   return(gauge(num, min=0, max=maxNum, label='CARDS'))
 }
 
@@ -89,20 +95,13 @@ gauge1 <- function(num) {
 # 1 copy of at least 1 of the given cards.
 gauge2 <- function(card_ids) {
   num <- 0
-  for (deck in decks) {
-    found <- FALSE
-    for (search_id in card_ids) {
-      for (card_id in deck$deck$main) {
-        if (card_id == search_id) {
-          found <- TRUE
-          num <- num + 1
-          break
-        }
-      }
-      if (found) { break }
+  for (card_id in card_ids) {
+    dcount <- getCardDecks(card_id)
+    if (dcount > num) {
+      num <- dcount
     }
   }
-  maxNum <- length(decks)
+  maxNum <- DECKS_COUNT
   return(gauge(num, min=0, max=maxNum, label='DECKS'))
 }
 
