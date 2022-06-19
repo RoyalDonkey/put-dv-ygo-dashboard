@@ -248,8 +248,46 @@ shinyServer(function(input, output) {
         scale_y_continuous(breaks=seq(0, 10000, 500))
     })
     
-    output$PLT_DeckBreakdown <- renderPlot({
-      # TODO
+    output$PLT_DeckBreakdown <- renderPlotly({
+      #Take input of which parameter was chosen to visualize
+      type  <- input$CTL_DeckBreakdown_TypeSelector
+      
+      #Create data table from deckbind to visualize
+      data <- NA
+      if (type == 'Deck Type') {
+        data <- setDF(deckbind[,1])
+        data <- data %>%
+          group_by(deck_type) %>%
+          summarize(amount = n())
+        data <- data[order(data$amount, decreasing = TRUE),]
+      } else if (type == 'Deck Master') {
+        data <- setDF(deckbind[,2])
+        data <- data %>%
+          group_by(deck_master) %>%
+          summarize(amount = n())
+        data <- data[order(data$amount, decreasing = TRUE),]
+        data <- data[1:10,]
+      } else if (type == 'Official/Trading Deck') {
+        data <- setDF(deckbind[,3])
+        data <- data %>%
+          group_by(tcg_ocg) %>%
+          summarize(amount = n())
+        data <- data[order(data$amount, decreasing = TRUE),]
+        data$amount[1] <- data$amount[1] + data$amount[2] + data$amount[5] + data$amount[7]
+        data$amount[4] <- data$amount[4] + data$amount[8] + data$amount[9]
+        data$amount[6] <- data$amount[6] + data$amount[10]
+        data <- data[c(1, 3, 4, 6),]
+      } else {
+        print(paste('ERROR! Unknown type:', type))
+      }
+      
+      #Change column names for convenience
+      colnames(data) <- c('distinction','amount')
+      
+      #Display plotly pie chart
+      plot_ly(data, labels = ~distinction, values = ~amount, type = 'pie',
+              textposition = 'outside',
+              textinfo = 'percent')
     })
   
     output$DATA_CardExplorer <- renderDataTable({
