@@ -157,7 +157,6 @@ shinyUI(fluidPage(
                  plotOutput('PLT_PopularCards')
                  ),
         tabPanel('ATK/DEF Stats', value='NAV_AtkDefStats', icon=icon('shield-alt'),
-                 # TODO
                  h2('ATK/DEF Stats'),
                  p('This page allows you to view the distribution of ATK and DEF
                    values of Monster cards. You can filter by type, attribute,
@@ -204,15 +203,24 @@ shinyUI(fluidPage(
                  plotOutput('PLT_AtkDefStats')
                  ),
         tabPanel('Deck Breakdown', value='NAV_DeckBreakdown', icon=icon('chart-pie'),
-                 # TODO
                  h2('Deck Breakdown'),
-                 p('<brief description of the plot and how to use it>'),
-                 plotOutput('PLT_DeckBreakdown')
+                 p('This page allows to choose one of 3 plots that demonstrates 
+                   the variety of decks based on separate parameters. The measurement 
+                   is amount of decks.'),
+                 div(class='control_rack',
+                     selectInput('CTL_DeckBreakdown_TypeSelector',
+                                 label = 'Choose a parameter',
+                                 choices = c('Deck Type','Deck Master','Official/Trading Deck'))
+                 ),
+                 plotlyOutput('PLT_DeckBreakdown',
+                              height = "600px",
+                              width = "600px")
                  ),
         tabPanel('Card Explorer', value='NAV_CardExplorer', icon=icon('search'),
                  h2('Card Explorer'),
-                 p('Search for specific cards by name, ATK/DEF or other attributes. 
-                    Click on a card to view its fully-sized picture.'),
+                 p('This page allows to search for specific cards by name, 
+                   ATK/DEF or other attributes. You can choose how many cards
+                   to show at the same time.'),
                  dataTableOutput("DATA_CardExplorer")
                  ),
         tabPanel('Meme Counters', value='NAV_MemeCounters', icon=icon('ankh'),
