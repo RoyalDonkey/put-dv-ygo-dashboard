@@ -25,6 +25,7 @@ load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/mai
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/decks_cards.Rdata'))
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/DECKS_CARDS_COUNT.Rdata'))
 load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/DECKS_COUNT.Rdata'))
+load(url('https://raw.githubusercontent.com/RoyalDonkey/put-dv-ygo-dashboard/main/data/cache/deckbind.Rdata'))
 
 # Function to obtain card metadata from its ID code in O(1) time
 getCard <- function(id) {
