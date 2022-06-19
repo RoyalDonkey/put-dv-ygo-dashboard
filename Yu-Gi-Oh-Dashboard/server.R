@@ -288,7 +288,8 @@ shinyServer(function(input, output) {
       plot_ly(data, labels = ~distinction, values = ~amount, type = 'pie',
               textposition = 'outside',
               textinfo = 'percent',
-              hovertemplate = paste('%{label}', '<br>Amount: %{value}', '<extra></extra>'))
+              hovertemplate = paste('%{label}', '<br>Amount: %{value}', '<extra></extra>'))%>%
+      layout(legend = list(x = 10, y = 0.9))
     })
   
     output$DATA_CardExplorer <- renderDataTable({
