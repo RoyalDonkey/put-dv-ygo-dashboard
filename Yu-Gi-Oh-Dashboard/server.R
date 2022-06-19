@@ -287,7 +287,8 @@ shinyServer(function(input, output) {
       #Display plotly pie chart
       plot_ly(data, labels = ~distinction, values = ~amount, type = 'pie',
               textposition = 'outside',
-              textinfo = 'percent')
+              textinfo = 'percent',
+              hovertemplate = paste('%{label}', '<br>Amount: %{value}', '<extra></extra>'))
     })
   
     output$DATA_CardExplorer <- renderDataTable({
