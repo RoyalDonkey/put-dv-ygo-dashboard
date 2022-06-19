@@ -299,8 +299,8 @@ shinyUI(fluidPage(
                      gaugeOutput('PLT_Meme_DarkMagician2'),
                      gaugeOutput('PLT_Meme_DarkMagician3'),
                  ),
-                 p('Now, for some spin-off cards we will look at which match "Black Magician"
-                   somewhere in the name or description (e.g. Black Magician Girl):'),
+                 p('Now, for some spin-off cards we will look at which match "Dark Magician"
+                   somewhere in the name or description (e.g. Dark Magician Girl):'),
                  div(class='gauge_row',
                      gaugeOutput('PLT_Meme_MoreDarkMagician1'),
                      gaugeOutput('PLT_Meme_MoreDarkMagician2'),
