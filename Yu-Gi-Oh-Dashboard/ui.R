@@ -213,9 +213,7 @@ shinyUI(fluidPage(
                                  label = 'Choose a parameter',
                                  choices = c('Deck Type','Deck Master','Official/Trading Deck'))
                  ),
-                 plotlyOutput('PLT_DeckBreakdown',
-                              height = "600px",
-                              width = "600px")
+                 plotlyOutput('PLT_DeckBreakdown')
                  ),
         tabPanel('Card Explorer', value='NAV_CardExplorer', icon=icon('search'),
                  h2('Card Explorer'),
