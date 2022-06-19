@@ -49,6 +49,14 @@ for (deck in decks) {
   #i <- i + 1
   #print(paste(i, '/', length(decks)))
 }
+
+#Convert list of decks to convenient data table with required information in columns
+for (i in 1:length(decks)) {
+  decks[[i]][[length(decks[[i]])]] <- NULL 
+}
+rm(i)
+deckbind <- rbindlist(decks, fill=TRUE)
+
 rm(deck)
 decks_cards <- as.data.frame(do.call(rbind, decks_cards))
 DECKS_CARDS_COUNT <- nrow(decks_cards)
@@ -60,3 +68,4 @@ save(decks_contain,     file='decks_contain.Rdata')
 save(decks_cards,       file='decks_cards.Rdata')
 save(DECKS_CARDS_COUNT, file='DECKS_CARDS_COUNT.Rdata')
 save(DECKS_COUNT,       file='DECKS_COUNT.Rdata')
+save(deckbind,          file='deckbind.Rdata')
